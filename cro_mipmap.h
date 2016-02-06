@@ -42,7 +42,7 @@ Credits:
 #define CRO_Max( x, y ) ( x > y ? x : y )
 #define CRO_Min( x, y ) ( x < y ? x : y )
 
-inline void cro_GetMipMapSize( unsigned int width, unsigned int height,
+static inline void cro_GetMipMapSize( unsigned int width, unsigned int height,
 				 unsigned int *newWidth, unsigned int *newHeight)
 {
   *newWidth = width >> 1;
@@ -63,7 +63,7 @@ inline void cro_GetMipMapSize( unsigned int width, unsigned int height,
 //
 //----------------------------------------------------
 //
-inline int cro_AvgBits( int n1, int n2, int n3, int n4, int bitShifts )
+static inline int cro_AvgBits( int n1, int n2, int n3, int n4, int bitShifts )
 {
 	int byte1 = (n1 >> bitShifts) & 0xff;
 	int byte2 = (n2 >> bitShifts) & 0xff;
@@ -72,7 +72,7 @@ inline int cro_AvgBits( int n1, int n2, int n3, int n4, int bitShifts )
 	return ( byte1 + byte2 + byte3 + byte4 ) >> 2;
 }
 
-inline int cro_MaxBits( int n1, int n2, int n3, int n4, int bitShifts )
+static inline int cro_MaxBits( int n1, int n2, int n3, int n4, int bitShifts )
 {
 
 	int byte1 = (n1 >> bitShifts) & 0xff;
@@ -82,7 +82,7 @@ inline int cro_MaxBits( int n1, int n2, int n3, int n4, int bitShifts )
 	return CRO_Max( CRO_Max( byte1, byte2 ), CRO_Max( byte3, byte4 ) );
 }
 
-inline int cro_MinBits( int n1, int n2, int n3, int n4, int bitShifts )
+static inline int cro_MinBits( int n1, int n2, int n3, int n4, int bitShifts )
 {
 	int byte1 = (n1 >> bitShifts) & 0xff;
 	int byte2 = (n2 >> bitShifts) & 0xff;
@@ -92,7 +92,7 @@ inline int cro_MinBits( int n1, int n2, int n3, int n4, int bitShifts )
 }
 
 
-inline void cro_MinMaxBits( int n1, int n2, int n3, int n4, int bitShifts, int *min, int *max )
+static inline void cro_MinMaxBits( int n1, int n2, int n3, int n4, int bitShifts, int *min, int *max )
 {
   int byte1 = (n1 >> bitShifts) & 0xff;
   int byte2 = (n2 >> bitShifts) & 0xff;
@@ -127,7 +127,7 @@ inline void cro_MinMaxBits( int n1, int n2, int n3, int n4, int bitShifts, int *
   *max = CRO_Max( max1, max2 );
 }
 
-inline int cro_GetMipMapLevels( unsigned int width, unsigned int height )
+static inline int cro_GetMipMapLevels( unsigned int width, unsigned int height )
 {
 	int levels = 0;
 	while ( width > 1 && height > 1 )
@@ -140,12 +140,12 @@ inline int cro_GetMipMapLevels( unsigned int width, unsigned int height )
 }
 
 #define CRO_GenMipMapI_Template( name, fn )			       \
-  inline void cro_GenMipMap##name##I( const int *image, int width, int height, int *newImage ) \
+  static inline void cro_GenMipMap##name##I( const int *image, unsigned int width, unsigned int height, int *newImage ) \
   {								       \
     if ( width == 0 || height == 0 )				       \
       return;							       \
     								       \
-    int newWidth, newHeight;						\
+    unsigned int newWidth, newHeight;					\
     int *newPixel = newImage;						\
     cro_GetMipMapSize( width, height, &newWidth, &newHeight );	\
 									\
@@ -180,12 +180,12 @@ CRO_GenMipMapI_Template( Avg, cro_AvgBits );
 CRO_GenMipMapI_Template( Min, cro_MinBits );
 CRO_GenMipMapI_Template( Max, cro_MaxBits );
 
-inline void cro_GenMipMapMinMaxI( const int *image, int width, int height, int *minMip, int *maxMip )
+static inline void cro_GenMipMapMinMaxI( const int *image, unsigned int width, unsigned int height, int *minMip, int *maxMip )
 {
   if ( width == 0 || height == 0 )
     return;
 
-  int newWidth, newHeight;
+  unsigned int newWidth, newHeight;
   int *minPixel = minMip;
   int *maxPixel = maxMip;
   cro_GetMipMapSize( width, height, &newWidth, &newHeight );
@@ -229,23 +229,23 @@ inline void cro_GenMipMapMinMaxI( const int *image, int width, int height, int *
 //
 //----------------------------------------------------
 //
-inline float cro_AvgF( float n1, float n2, float n3, float n4 )
+static inline float cro_AvgF( float n1, float n2, float n3, float n4 )
 {
   //NOTE: doesn't take into account if sum overflows before being multiplied
   return ( n1 + n2 + n3 + n4 ) * 0.25f;
 }
 
-inline float cro_MinF( float n1, float n2, float n3, float n4 )
+static inline float cro_MinF( float n1, float n2, float n3, float n4 )
 {
   return CRO_Min( CRO_Min( n1, n2 ), CRO_Min( n3, n4 ));
 }
 
-inline float cro_MaxF( float n1, float n2, float n3, float n4 )
+static inline float cro_MaxF( float n1, float n2, float n3, float n4 )
 {
   return CRO_Max( CRO_Max( n1, n2 ), CRO_Max( n3, n4 ));
 }
 
-inline void cro_MinMaxF( float n1, float n2, float n3, float n4, float *min, float *max )
+static inline void cro_MinMaxF( float n1, float n2, float n3, float n4, float *min, float *max )
 {
   float max1, max2, min1, min2;
 
@@ -277,12 +277,12 @@ inline void cro_MinMaxF( float n1, float n2, float n3, float n4, float *min, flo
 
 
 #define CRO_GenMipMapF_Template( name, fn )			        \
-  inline void cro_GenMipMap##name##F( const float *image, int width, int height, float *newImage ) \
+  static inline void cro_GenMipMap##name##F( const float *image, unsigned int width, unsigned int height, float *newImage ) \
   {                                                                     \
     if ( width == 0 || height == 0 )				        \
       return;							        \
                                                                         \
-    int newWidth, newHeight;					        \
+    unsigned int newWidth, newHeight;					        \
     float *newPixel = newImage;					        \
     cro_GetMipMapSize( width, height, &newWidth, &newHeight );        \
                                                                         \
@@ -308,12 +308,12 @@ CRO_GenMipMapF_Template( Avg, cro_AvgF );
 CRO_GenMipMapF_Template( Min, cro_MinF );
 CRO_GenMipMapF_Template( Max, cro_MaxF );
 
-inline void cro_GenMipMapMinMaxF( const float *image, int width, int height, float *minMip, float *maxMip )
+static inline void cro_GenMipMapMinMaxF( const float *image, unsigned int width, unsigned int height, float *minMip, float *maxMip )
 {
   if ( width == 0 || height == 0 )
     return;
 
-  int newWidth, newHeight;
+  unsigned int newWidth, newHeight;
   float *minPixel = minMip;
   float *maxPixel = maxMip;
   cro_GetMipMapSize( width, height, &newWidth, &newHeight );
