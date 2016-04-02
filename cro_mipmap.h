@@ -39,8 +39,8 @@ Credits:
 #undef CRO_Max;
 #endif
 
-#define CRO_Max( x, y ) ( x > y ? x : y )
-#define CRO_Min( x, y ) ( x < y ? x : y )
+#define CRO_Max( x, y ) ( (x) > (y) ? (x) : (y) )
+#define CRO_Min( x, y ) ( (x) < (y) ? (x) : (y) )
 
 static inline void cro_GetMipMapSize( unsigned int width, unsigned int height,
 				 unsigned int *newWidth, unsigned int *newHeight)
